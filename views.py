@@ -38,7 +38,7 @@ def index(request):
         svgObj = File(f)
         svgObj.write(svg)
         svgObj.close()
-        string = 'java -jar '+ BATIK_PATH + ' -m ' + typeString +' -d '+ outfile +' -w '+ width + ' ' + svgObj.name +'        
+        string = 'java -jar '+ str(BATIK_PATH) + ' -m ' + str(typeString) +' -d '+ str(outfile) +' -w '+ str(width) + ' ' + str(svgObj.name)        
         convert = commands.getoutput(string)
         resultado = Image.open(outfile)
         return HttpResponse(resultado, mimetype=tipo)
