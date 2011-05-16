@@ -3,3 +3,7 @@ nbproject/
 *.html~
 *.py~
 *.css~
+files/*.svg
+files/*.png
+files/*.jpg
+files/*.pdf

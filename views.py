@@ -20,11 +20,11 @@ def index(request):
             typeString = 'image/png'
             ext = '.png'
         elif tipo == 'image/jpeg':
-            typeString = 'image/jpeg'
+            typeString = 'image/jpg'
             ext = '.jpg'
         elif tipo == 'application/pdf':
             typeString = 'application/pdf'
-            ext = '.pdf'
+            ext = '.pdf'	    
         else:
             typeString = 'image/svg+xml'
             ext = '.svg'
@@ -33,17 +33,19 @@ def index(request):
 
     outfile = MEDIA_ROOT + tmpName + ext
 
-#    try:
-    f = open('%s%s%s' % (MEDIA_ROOT, tmpName, '.svg'), 'w')
-    svgObj = File(f)
-    svgObj.write(svg.encode('utf-8'))
-    svgObj.close()
-    string = 'java -jar ' + str(BATIK_PATH) + ' -m ' + str(typeString) + ' -d ' + str(outfile) + ' -w ' + str(width) + ' ' + str(svgObj.name)
-    convert = commands.getoutput(string)
-    resultado = Image.open(outfile)
-    return HttpResponse(resultado, mimetype=tipo)
-#    except:
-#        return HttpResponse(convert)
+    try:
+        f = open('%s%s%s' % (MEDIA_ROOT,tmpName,'.svg'), 'w')
+        svgObj = File(f)
+        svgObj.write(svg.encode('utf-8'))
+        svgObj.close()
+        string = 'java -jar '+ str(BATIK_PATH) + ' -m ' + str(tipo) +' -d '+ str(outfile) +' -w '+ str(width) + ' ' + str(svgObj.name)        
+        convert = commands.getoutput(string)
+        salida = open(outfile)
+	response = HttpResponse(salida, mimetype=tipo)
+	response['Content-Disposition'] = 'attachment; filename=grafico'+ext
+	return response
+    except Exception:
+        return HttpResponse(str(Exception))
 
 #    return HttpResponse(svgObj.name)
 
