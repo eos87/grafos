@@ -1,11 +1,11 @@
-from django.utils.hashcompat import sha_constructor
+# -*- coding: UTF-8 -*-
+from PIL import Image
+import commands
 from django.core.files import File
 from django.http import HttpResponse
-from PIL import Image
-import random
-import commands
-
+from django.utils.hashcompat import sha_constructor
 from grafos.settings import *
+import random
 BATIK_PATH = MEDIA_ROOT + 'batik/batik-rasterizer.jar '
 
 def index(request):
@@ -31,19 +31,19 @@ def index(request):
     else:
         return HttpResponse('<h1>GTFO!!</h1>', mimetype='text/html')
 
-    outfile =  MEDIA_ROOT + tmpName + ext
+    outfile = MEDIA_ROOT + tmpName + ext
 
-    try:
-        f = open('%s%s%s' % (MEDIA_ROOT,tmpName,'.svg'), 'w')
-        svgObj = File(f)
-        svgObj.write(svg)
-        svgObj.close()
-        string = 'java -jar '+ str(BATIK_PATH) + ' -m ' + str(typeString) +' -d '+ str(outfile) +' -w '+ str(width) + ' ' + str(svgObj.name)        
-        convert = commands.getoutput(string)
-        resultado = Image.open(outfile)
-        return HttpResponse(resultado, mimetype=tipo)
-    except:
-        return HttpResponse(convert)
+#    try:
+    f = open('%s%s%s' % (MEDIA_ROOT, tmpName, '.svg'), 'w')
+    svgObj = File(f)
+    svgObj.write(svg.encode('utf-8'))
+    svgObj.close()
+    string = 'java -jar ' + str(BATIK_PATH) + ' -m ' + str(typeString) + ' -d ' + str(outfile) + ' -w ' + str(width) + ' ' + str(svgObj.name)
+    convert = commands.getoutput(string)
+    resultado = Image.open(outfile)
+    return HttpResponse(resultado, mimetype=tipo)
+#    except:
+#        return HttpResponse(convert)
 
-    return HttpResponse(svgObj.name)
+#    return HttpResponse(svgObj.name)
 
