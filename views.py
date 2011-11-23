@@ -8,7 +8,7 @@ from grafos.settings import *
 import random
 BATIK_PATH = MEDIA_ROOT + 'batik/batik-rasterizer.jar '
 
-def index(request):
+def index(request):    
     if request.method == 'POST':
         tmpName = sha_constructor(str(random.random())).hexdigest()
         tipo = request.POST['type']
@@ -32,7 +32,12 @@ def index(request):
         return HttpResponse('<h1>GTFO!!</h1>', mimetype='text/html')
 
     outfile = MEDIA_ROOT + tmpName + ext
-
+    #return the url not the image
+    try:    
+        img_url = request.POST['img_url']
+    except:
+        img_url = None
+        
     try:
         f = open('%s%s%s' % (MEDIA_ROOT,tmpName,'.svg'), 'w')
         svgObj = File(f)
@@ -41,11 +46,12 @@ def index(request):
         string = 'java -jar '+ str(BATIK_PATH) + ' -m ' + str(tipo) +' -d '+ str(outfile) +' -w '+ str(width) + ' ' + str(svgObj.name)        
         convert = commands.getoutput(string)
         salida = open(outfile)
-	response = HttpResponse(salida, mimetype=tipo)
-	response['Content-Disposition'] = 'attachment; filename=grafico'+ext
-	return response
+        #only url not the image
+        if img_url:
+            return HttpResponse(tmpName + ext)   
+                
+    	response = HttpResponse(salida, mimetype=tipo)
+    	response['Content-Disposition'] = 'attachment; filename=grafico'+ext
+    	return response
     except Exception:
         return HttpResponse(str(Exception))
-
-#    return HttpResponse(svgObj.name)
-
