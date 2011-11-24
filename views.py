@@ -6,10 +6,11 @@ from django.http import HttpResponse
 from django.utils.hashcompat import sha_constructor
 from grafos.settings import *
 import random
+import imgur
 BATIK_PATH = MEDIA_ROOT + 'batik/batik-rasterizer.jar '
 
 def index(request):    
-    if request.method == 'POST':
+    if request.method == 'POST':        
         tmpName = sha_constructor(str(random.random())).hexdigest()
         tipo = request.POST['type']
         svg = request.POST['svg']
@@ -37,7 +38,7 @@ def index(request):
         img_url = request.POST['img_url']
     except:
         img_url = None
-        
+            
     try:
         f = open('%s%s%s' % (MEDIA_ROOT,tmpName,'.svg'), 'w')
         svgObj = File(f)
@@ -46,12 +47,13 @@ def index(request):
         string = 'java -jar '+ str(BATIK_PATH) + ' -m ' + str(tipo) +' -d '+ str(outfile) +' -w '+ str(width) + ' ' + str(svgObj.name)        
         convert = commands.getoutput(string)
         salida = open(outfile)
-        #only url not the image
-        if img_url:
-            return HttpResponse(tmpName + ext)   
-                
-    	response = HttpResponse(salida, mimetype=tipo)
-    	response['Content-Disposition'] = 'attachment; filename=grafico'+ext
-    	return response
+        
+        #only url not the image        
+        if img_url:                             
+            return HttpResponse(imgur.upload(salida)['upload']['links']['original'])
+        
+        response = HttpResponse(salida, mimetype=tipo)
+        response['Content-Disposition'] = 'attachment; filename=grafico'+ext
+        return response
     except Exception:
         return HttpResponse(str(Exception))
