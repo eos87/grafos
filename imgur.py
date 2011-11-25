@@ -1,6 +1,6 @@
+from django.utils import simplejson
 import urllib
 import base64
-import simplejson
 
 API_KEY = '1c5bc30783866fee7a0bda498abfd281'
 BASE_URL = 'http://api.imgur.com/2/%s.json'
